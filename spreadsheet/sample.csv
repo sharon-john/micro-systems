@@ -1,0 +1,5 @@
+Name,Basic_Salary,Bonus,Total,Performance_Rating
+Alice,50000,=B2*0.1,=B2+C2,4.5
+Bob,60000,=B3*0.15,=B3+C3,4.8
+Charlie,45000,=B4*0.12,=B4+C4,4.2
+Diana,55000,=B5*0.2,=B5+C5,4.7
