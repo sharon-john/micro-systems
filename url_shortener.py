@@ -10,6 +10,8 @@ class URLShortener:
 
     numeric_min_range, numeric_max_range = 0, 9
 
+    top_urls = []
+
     def __init__(self):
         self.url_mapping = dict()
         self.short_code_mapping = dict()
@@ -48,13 +50,46 @@ class URLShortener:
         return short_code  
     
     def get_top_urls(self, n):
-        num_urls = len(self.short_code_mapping)
-        if n > num_urls:
-            n = num_urls 
-        
-        res = [ (self.short_code_mapping[elem][0], elem, self.short_code_mapping[elem][1]) for elem in sorted(self.short_code_mapping, key = lambda x: self.short_code_mapping[x][1], reverse=True) ]
+        if n > len(self.short_code_mapping):
+            n = len(self.short_code_mapping)
 
-        return res[0:n]
+        if self.top_urls == []:
+            num_urls = len(self.short_code_mapping)
+            if n > num_urls:
+                n = num_urls 
+            
+            self.top_urls = [ (self.short_code_mapping[elem][0], elem, self.short_code_mapping[elem][1]) for elem in sorted(self.short_code_mapping, key = lambda x: self.short_code_mapping[x][1], reverse=True) ]
+
+        return self.top_urls[0:n]
+    
+    def resort_top_urls(self, updated_url):
+        # can only resort if it's already sorted 
+        if self.top_urls == []:
+            self.get_top_urls(len(self.url_mapping))
+        
+        # implement linear search here to find where the updated access count goes and then reorder rest of top_urls  
+
+        # left shift by 1 
+        curr_index = -1
+        new_index = -1 
+        for i in range(len(self.top_urls)):
+            if self.top_urls[i][0] == updated_url[0]:
+                curr_index = i 
+            
+            if self.top_urls[i][2] <= updated_url[1] and self.top_urls[i][0] != updated_url[0]:
+                new_index = i 
+        
+        # first delete old index, then right shift by 1 starting at new_index + 1 
+        curr_url_entry = self.top_urls[curr_index]
+        curr_url_entry = (curr_url_entry[0], curr_url_entry[1], updated_url[1])
+
+        del self.top_urls[curr_index]
+        self.top_urls.append(0)
+
+        for i in range(len(self.top_urls)-1, new_index, -1):
+            self.top_urls[i] = self.top_urls[i-1]
+        
+        self.top_urls[new_index] = curr_url_entry
 
     def get_url(self, short_code):
         url_and_access_count = self.short_code_mapping.get(short_code, -1)
@@ -64,6 +99,10 @@ class URLShortener:
         url, access_count = url_and_access_count[0], url_and_access_count[1] + 1 
 
         self.short_code_mapping[short_code] = (url, access_count)
+        
+        if self.top_urls != []:
+            self.resort_top_urls(self.short_code_mapping[short_code])
+
         return url
 
 shortener = URLShortener()
@@ -88,4 +127,19 @@ print(shortener.get_url(short_code3))
 
 
 print(shortener.get_top_urls(4))
+
+shortener.get_url(short_code2)
+print(shortener.get_top_urls(4))
+
+shortener.get_url(short_code2)
+print(shortener.get_top_urls(4))
+
+shortener.get_url(short_code2)
+shortener.get_url(short_code2)
+shortener.get_url(short_code2)
+print(shortener.get_top_urls(4))
+
+
+
+
 
