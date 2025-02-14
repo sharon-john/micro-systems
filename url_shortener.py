@@ -75,9 +75,12 @@ class URLShortener:
         for i in range(len(self.top_urls)):
             if self.top_urls[i][0] == updated_url[0]:
                 curr_index = i 
-            
-            if self.top_urls[i][2] <= updated_url[1] and self.top_urls[i][0] != updated_url[0]:
+                break 
+
+        for i in range(len(self.top_urls)):
+            if self.top_urls[i][2] < updated_url[1] and self.top_urls[i][0] != updated_url[0]:
                 new_index = i 
+                break 
         
         # first delete old index, then right shift by 1 starting at new_index + 1 
         curr_url_entry = self.top_urls[curr_index]
